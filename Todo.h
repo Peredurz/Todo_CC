@@ -11,6 +11,7 @@ public:
     int index;
     std::string info;
     Item* next;
+    bool completed;
     Item(int idx, std::string& data, Item* n);
 };
 
@@ -21,6 +22,7 @@ public:
     void Display();
     void Add(std::string& data);
     void Delete(int index);
+    void Complete(int index);
     void Edit(int index, std::string& data);
     void Save();
     void Load();

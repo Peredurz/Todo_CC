@@ -21,6 +21,7 @@ int main() {
     // Editing an item
     std::string newTask2 = "Call Bob";
     todoList.Edit(1, newTask2);
+    todoList.Complete(1);
 
     // Displaying items after edit
     std::cout << "List after editing task 2:" << std::endl;
@@ -34,7 +35,8 @@ int main() {
     std::cout << "List after deleting task 0:" << std::endl;
     todoList.Display();
     std::cout << std::endl;
-
+    todoList.Complete(1);
+    todoList.Display();
     // Saving the list to a file
     todoList.Save();
 

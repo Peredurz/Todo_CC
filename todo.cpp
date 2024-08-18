@@ -6,16 +6,17 @@
 #include <iostream>
 
 // Item class constructor
-Item::Item(int idx, std::string& data, Item* n) {
-  index = idx;
-  info = data;
-  next = n;
+Item::Item(int idx, std::string &data, Item *n) {
+    index = idx;
+    info = data;
+    next = n;
+    completed = false;
 }
 
 List::List() {
-  amount = 0;
-  head = nullptr;
-  tail = nullptr;
+    amount = 0;
+    head = nullptr;
+    tail = nullptr;
 }
 
 List::~List() { Clear(); }
@@ -23,21 +24,22 @@ List::~List() { Clear(); }
 // public class methods
 
 void List::Display() {
-  if (head != nullptr) {
-    Item* current = head;
-    do {
-      int item = current->index + 1;
-      std::string info = current->info;
-      std::cout << item << ". " << info << std::endl;
-      current = current->next;
-    } while (current != nullptr);
-  }
+    if (head != nullptr) {
+        Item* current = head;
+        int idx = 1;  // Start numbering from 1 for display
+        do {
+            std::string status = current->completed ? "Has been Completed!" : "Has not been Completed.";
+            std::cout << idx << ". " << current->info << " " << status << std::endl;
+            current = current->next;
+            idx++;  // Increment display index
+        } while (current != nullptr);
+    }
 }
 
-void List::Add(std::string& data) {
-    Item* newitem = new Item(amount, data, nullptr);
+void List::Add(std::string &data) {
+    Item *newitem = new Item(amount, data, nullptr);
     amount++;
-    if(head==nullptr){
+    if (head == nullptr) {
         head = newitem;
         tail = newitem;
     } else {
@@ -52,15 +54,15 @@ void List::Delete(int index) {
     }
 
     if (index == 0) {
-        Item* temp = head;
+        Item *temp = head;
         head = head->next;
-        if (head == nullptr) {  
+        if (head == nullptr) {
             tail = nullptr;
         }
         delete temp;
         amount--;
         head->index = 0;
-        Item* current = head;
+        Item *current = head;
         while (current->next != nullptr) {
             current->next->index = current->index + 1;
             current = current->next;
@@ -68,12 +70,12 @@ void List::Delete(int index) {
         return;
     }
 
-    Item* prev = head;
+    Item *prev = head;
     for (int i = 0; i < index - 1; i++) {
         prev = prev->next;
     }
 
-    Item* to_delete = prev->next;
+    Item *to_delete = prev->next;
     prev->next = to_delete->next;
 
     if (to_delete == tail) {
@@ -83,23 +85,24 @@ void List::Delete(int index) {
     delete to_delete;
     amount--;
 
-    Item* current = prev->next;
+    Item *current = prev->next;
     while (current != nullptr) {
         current->index = index;
         index++;
         current = current->next;
     }
 }
-void List::Edit(int index, std::string& data) {
+void List::Edit(int index, std::string &data) {
+    index--;
     if (index < 0 || index >= amount) {
         std::cout << "Invalid index." << std::endl;
         return;
     }
 
-    if(index==0){
+    if (index == 0) {
         head->info = data;
     } else {
-        Item* current = head;
+        Item *current = head;
         for (int i = 0; i < index; i++) {
             current = current->next;
         }
@@ -113,9 +116,10 @@ void List::Save() {
         return;
     }
 
-    Item* current = head;
+    Item *current = head;
     while (current != nullptr) {
-        file << current->index << ";" << current->info << std::endl;
+        file << current->index << ";" << current->info << ";"
+             << current->completed << std::endl;
         current = current->next;
     }
 
@@ -130,38 +134,56 @@ void List::Load() {
     Clear();
     std::string line;
 
-    while(std::getline(file, line)){
+    while (std::getline(file, line)) {
         size_t delim = line.find(';');
         int index = std::stoi(line.substr(0, delim));
         std::string info;
+        bool completed;
         if (delim != std::string::npos) {
             info = line.substr(delim + 1);
             Add(info, index);
+            info = line.back();
+            if (info == "1") {
+                Complete(index + 1);
+            }
         }
     }
     file.close();
 }
 
+void List::Complete(int index) {
+    index--;
+    if (index < 0 || index >= amount) {
+        std::cout << "Invalid index." << std::endl;
+        return;
+    }
+    Item *current = head;
+    for (int i = 0; i < index; i++) {
+        current = current->next;
+    }
+    current->completed = true;
+}
+
 // private class methods
 void List::Clear() {
-    Item* current = head;  
+    Item *current = head;
 
     while (current != nullptr) {
-        Item* next = current->next;  
-        delete current;              
-        current = next;              
+        Item *next = current->next;
+        delete current;
+        current = next;
     }
-    head = nullptr;  
-    tail = nullptr;  
-    amount = 0;      
+    head = nullptr;
+    tail = nullptr;
+    amount = 0;
 }
-void List::Add(std::string& data, int index) {
+void List::Add(std::string &data, int index) {
     if (index < 0 || index > amount) {
         std::cout << "Invalid index." << std::endl;
         return;
     }
 
-    Item* newitem = new Item(index, data, nullptr);
+    Item *newitem = new Item(index, data, nullptr);
     amount++;
 
     if (index == 0) {
@@ -173,7 +195,7 @@ void List::Add(std::string& data, int index) {
         return;
     }
 
-    Item* current = head;
+    Item *current = head;
     for (int i = 0; i < index - 1; i++) {
         current = current->next;
     }

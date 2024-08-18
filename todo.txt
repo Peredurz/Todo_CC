@@ -1,2 +1,2 @@
-0;Call Bob;1
+0;Call Alice;1
 1;Finish homework;0
